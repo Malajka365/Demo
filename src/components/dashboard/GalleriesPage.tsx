@@ -114,7 +114,7 @@ const GalleriesPage: React.FC = () => {
         </Link>
 
         <div className="flex items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">My Galleries</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Manage Galleries</h1>
         </div>
 
         {error && (
