@@ -148,3 +148,10 @@ VITE_SUPABASE_ANON_KEY=supabase_anon_kulcs
 4. Fejlesztői szerver indítása:
 ```bash
 npm run dev
+
+
+**********Step By Step Process to deploy on Netlify***********  :
+-> npm run build
+-> npm install -g netlify-cli
+-> netlify deploy
+-> netlify deploy --prod
