@@ -8,6 +8,7 @@ import Header from '../common/Header';
 
 const TagManagementPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { id: galleryId } = useParams();
   // const [searchParams] = useSearchParams();
   const [tagGroups, setTagGroups] = useState<TagGroup[]>([]);
   const [galleryName, setGalleryName] = useState<string>('');
@@ -139,11 +140,12 @@ const TagManagementPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link 
-            to="/dashboard/galleries"
+            to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"} 
+            // to="/dashboard/galleries"
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Galleries
+            {galleryId ? "Back to Gallery" : "Back to Gallery"}
           </Link>
         </div>
 

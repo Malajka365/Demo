@@ -74,6 +74,8 @@ function App() {
 
         setGalleries(galleriesData || []);
 
+
+
         // Get the IDs of visible galleries
         const galleryIds = galleriesData.map(g => g.id);
 

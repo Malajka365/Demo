@@ -9,6 +9,7 @@ import Header from '../common/Header';
 
 const UploadPage: React.FC = () => {
   const navigate = useNavigate();
+  const { id: galleryId } = useParams();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [galleryName, setGalleryName] = useState<string>('');
@@ -64,9 +65,11 @@ const UploadPage: React.FC = () => {
         <Header showManageButtons={true} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-red-500">Error: Gallery ID is required</div>
-          <Link to="/dashboard/galleries" className="text-blue-500 hover:text-blue-600 mt-4 inline-block">
+          <Link   
+           to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"}   
+           className="text-blue-500 hover:text-blue-600 mt-4 inline-block">
             <ArrowLeft className="inline mr-2" size={20} />
-            Back to Galleries
+            {galleryId ? "Back to Gallery" : "Back to Gallery"}
           </Link>
         </div>
       </div>
@@ -91,9 +94,10 @@ const UploadPage: React.FC = () => {
         <Header showManageButtons={true} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-red-500">{error}</div>
-          <Link to="/dashboard/galleries" className="text-blue-500 hover:text-blue-600 mt-4 inline-block">
+          <Link   to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"} 
+           className="text-blue-500 hover:text-blue-600 mt-4 inline-block">
             <ArrowLeft className="inline mr-2" size={20} />
-            Back to Galleries
+            {galleryId ? "Back to Gallery" : "Back to Gallery"}
           </Link>
         </div>
       </div>
@@ -107,11 +111,12 @@ const UploadPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link 
-            to="/dashboard/galleries"
+            // to="/dashboard/galleries"
+            to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"} 
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Galleries
+            {galleryId ? "Back to Gallery" : "Back to Gallery"}
           </Link>
         </div>
 
