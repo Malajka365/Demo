@@ -9,7 +9,6 @@ import Header from '../common/Header';
 const TagManagementPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { id: galleryId } = useParams();
-  // const [searchParams] = useSearchParams();
   const [tagGroups, setTagGroups] = useState<TagGroup[]>([]);
   const [galleryName, setGalleryName] = useState<string>('');
   const [newGroup, setNewGroup] = useState('');
@@ -108,9 +107,6 @@ const TagManagementPage: React.FC = () => {
     }
   };
 
-  // Create back link URL with preserved filters
-  // const backToGalleryUrl = `/gallery/${id}`;
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -141,7 +137,6 @@ const TagManagementPage: React.FC = () => {
         <div className="mb-6">
           <Link 
             to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"} 
-            // to="/dashboard/galleries"
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

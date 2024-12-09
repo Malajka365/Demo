@@ -17,8 +17,6 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import { Video, Gallery } from './lib/supabase-types';
-// import { Auth } from '@supabase/auth-ui-react';
-// import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 function App() {
   const [galleries, setGalleries] = useState<Gallery[]>([]);

@@ -127,7 +127,6 @@ const [videos, setVideos] = useState<Video[]>([]);
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link 
-            // to="/dashboard/galleries"
             to={galleryId ? `/gallery/${galleryId}` : "/dashboard/galleries/"} 
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
           >
