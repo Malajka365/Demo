@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
+interface TagGroup {
+  name: string;
+  tags: string[];
+}
+
 interface TagFilterProps {
   tagGroups: TagGroup[];
   activeTags: { [key: string]: string[] };

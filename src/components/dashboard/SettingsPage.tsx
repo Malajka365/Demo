@@ -189,13 +189,21 @@ const SettingsPage: React.FC = () => {
                   className="mt-2 w-20 h-20 rounded-full object-cover"
                 />
               )}
-              <input
-                type="file"
-                id="avatar"
-                accept="image/*"
-                onChange={handleAvatarUpload}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
+              <div className="mt-2">
+                <label className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                  <input
+                    type="file"
+                    id="avatar"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="sr-only"
+                  />
+                  Choose File
+                </label>
+                <span className="ml-3 text-sm text-gray-500">
+                  {avatarUrl ? 'File selected' : 'No file selected'}
+                </span>
+              </div>
             </div>
 
             <div>
