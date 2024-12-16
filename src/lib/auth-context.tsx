@@ -299,62 +299,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, username: string) => {
     setLoading(true);
     try {
-      // First try to check if username is already taken
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .single();
-
-      if (existingUser) {
-        throw new Error('Username is already taken');
-      }
-
       // Sign up the user
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: email,
+        password: password,
         options: {
-          data: { username }
+          data: {
+            username: username,
+            avatar_url: '',
+          }
         }
       });
-
+  
       if (error) throw error;
-
+  
       if (data?.user) {
-        // Create profile immediately instead of waiting for trigger
-        const { error: profileError } = await supabase
+        console.log('User signed up successfully:', data.user);
+        
+        // Fetch the profile to verify trigger success
+        const { data: profile, error: fetchError } = await supabase
           .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              username,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-          ]);
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          // If profile creation fails, try to delete the auth user
-          await supabase.auth.admin.deleteUser(data.user.id);
-          throw new Error('Failed to create user profile');
-        }
-
-        // Fetch the newly created profile
-        const profileData = await fetchProfile(data.user.id);
-        if (profileData) {
-          setProfile(profileData);
-        }
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+  
+        if (fetchError) throw new Error('Profile was not created automatically.');
+        setProfile(profile);
       }
     } catch (error: any) {
-      console.error('Error signing up:', error.message);
+      console.error('Error signing up:', error);
       throw error;
     } finally {
       setLoading(false);
     }
   };
-
+  
   const signOut = async () => {
     setLoading(true);
     try {

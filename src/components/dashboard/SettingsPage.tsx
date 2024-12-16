@@ -10,7 +10,7 @@ const SettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   // Form állapotok
   const [username, setUsername] = useState(profile?.username || '');
   const [email, setEmail] = useState(user?.email || '');
@@ -41,9 +41,9 @@ const SettingsPage: React.FC = () => {
         username,
         avatar_url: avatarUrl,
       });
-      setSuccess('Profil sikeresen frissítve!');
+      setSuccess('Profile updated successfully!');
     } catch (err) {
-      setError('Hiba történt a profil frissítése közben.');
+      setError('Error updating profile.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -54,7 +54,7 @@ const SettingsPage: React.FC = () => {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setError('Az új jelszavak nem egyeznek!');
+      setError('Passwords do not match!');
       return;
     }
 
@@ -69,12 +69,12 @@ const SettingsPage: React.FC = () => {
 
       if (error) throw error;
 
-      setSuccess('Jelszó sikeresen megváltoztatva!');
+      setSuccess('Password changed successfully!');
       // setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setError('Hiba történt a jelszó változtatása közben.');
+      setError('Error changing password.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -108,9 +108,9 @@ const SettingsPage: React.FC = () => {
 
       setAvatarUrl(data.publicUrl);
       await updateProfile({ avatar_url: data.publicUrl });
-      setSuccess('Avatar sikeresen frissítve!');
+      setSuccess('Avatar updated successfully!');
     } catch (err) {
-      setError('Hiba történt az avatar feltöltése közben.');
+      setError('Error uploading avatar.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -127,11 +127,11 @@ const SettingsPage: React.FC = () => {
           className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Vissza a Dashboard-ra
+          Back to Dashboard
         </Link>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Fiók Beállítások</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Account Settings</h2>
 
           {error && (
             <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
@@ -145,12 +145,12 @@ const SettingsPage: React.FC = () => {
             </div>
           )}
 
-          {/* Profil beállítások */}
+          {/* Profile settings */}
           <form onSubmit={handleUpdateProfile} className="space-y-6 mb-8">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 <User className="w-4 h-4 inline-block mr-2" />
-                Felhasználónév
+                Username
               </label>
               <input
                 type="text"
@@ -174,13 +174,13 @@ const SettingsPage: React.FC = () => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
               />
               <p className="text-sm text-gray-500 mt-1">
-                Az email cím módosításához vedd fel a kapcsolatot az adminisztrátorral.
+                To change your email address, please contact the administrator.
               </p>
             </div>
 
             <div>
               <label htmlFor="avatar" className="block text-sm font-medium text-gray-700">
-                Profilkép
+                Profile Picture
               </label>
               {avatarUrl && (
                 <img
@@ -205,18 +205,18 @@ const SettingsPage: React.FC = () => {
                 className="inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 <Save className="w-4 h-4 mr-2" />
-                Profil Mentése
+                Save Profile
               </button>
             </div>
           </form>
 
-          {/* Jelszó változtatás */}
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Jelszó Változtatás</h3>
+          {/* Password change */}
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Change Password</h3>
           <form onSubmit={handlePasswordChange} className="space-y-6">
             <div>
               <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
                 <Key className="w-4 h-4 inline-block mr-2" />
-                Új Jelszó
+                New Password
               </label>
               <input
                 type="password"
@@ -230,7 +230,7 @@ const SettingsPage: React.FC = () => {
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 <Key className="w-4 h-4 inline-block mr-2" />
-                Új Jelszó Megerősítése
+                Confirm New Password
               </label>
               <input
                 type="password"
@@ -248,18 +248,18 @@ const SettingsPage: React.FC = () => {
                 className="inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
               >
                 <Save className="w-4 h-4 mr-2" />
-                Jelszó Változtatása
+                Change Password
               </button>
             </div>
           </form>
 
-          {/* Kijelentkezés */}
+          {/* Sign out */}
           <div className="mt-8">
             <button
               onClick={signOut}
               className="inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
-              Kijelentkezés
+              Sign Out
             </button>
           </div>
         </div>
