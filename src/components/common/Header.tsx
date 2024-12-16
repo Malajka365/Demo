@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Home, Settings, LogOut, LogIn, Video as VideoIcon, Upload, Tags, LayoutDashboard, Film } from 'lucide-react';
 import { useAuth } from '../../lib/auth-context';
-import AuthModal from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
-
 
 interface HeaderProps {
   showManageButtons?: boolean;
@@ -14,7 +12,6 @@ const Header: React.FC<HeaderProps> = ({ showManageButtons = false }) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { id } = useParams<{ id: string }>();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isGalleryOwner, setIsGalleryOwner] = useState(false);
 
   useEffect(() => {
@@ -75,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ showManageButtons = false }) => {
 
             {!user ? (
               <button
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => navigate('/login')}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
               >
                 <LogIn className="w-4 h-4 mr-2" />
@@ -139,7 +136,6 @@ const Header: React.FC<HeaderProps> = ({ showManageButtons = false }) => {
           </div>
         </div>
       </div>
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </header>
   );
 };

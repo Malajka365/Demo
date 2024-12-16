@@ -8,6 +8,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signUp: (email: string, password: string, username: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Profile lekérése (rate limiting-gel)
   const fetchProfile = useCallback(async (userId: string) => {
     const now = Date.now();
-    // Csak akkor kérjük le újra a profilt, ha az utolsó lekérés óta legalább 1 perc eltelt
+    // Rate limiting check
     if (now - lastProfileFetch < 60000) {
       console.log('Skipping profile fetch due to rate limiting');
       return profile;
@@ -54,30 +55,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
 
-      if (!data) {
-        console.log('No profile found, creating new profile');
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: userId,
-              username: 'user_' + userId.slice(0, 8),
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-          ])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError.message);
-          return null;
-        }
-
-        return newProfile;
+      // If profile exists, return it
+      if (data) {
+        return data;
       }
 
-      return data;
+      // If no profile exists, create one
+      console.log('No profile found, creating new profile');
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: userId,
+            username: 'user_' + userId.slice(0, 8),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ])
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating profile:', createError.message);
+        // Check if error is due to unique constraint on username
+        if (createError.message.includes('unique constraint')) {
+          // Try again with a random suffix
+          const randomSuffix = Math.random().toString(36).substring(2, 8);
+          const { data: retryProfile, error: retryError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: userId,
+                username: 'user_' + randomSuffix,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }
+            ])
+            .select()
+            .single();
+
+          if (retryError) {
+            console.error('Error in retry create profile:', retryError.message);
+            return null;
+          }
+
+          return retryProfile;
+        }
+        return null;
+      }
+
+      return newProfile;
     } catch (error) {
       console.error('Error in fetchProfile:', error);
       return null;
@@ -250,9 +277,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Error signing in with Google:', error.message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signUp = async (email: string, password: string, username: string) => {
     setLoading(true);
     try {
+      // First try to check if username is already taken
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+
+      if (existingUser) {
+        throw new Error('Username is already taken');
+      }
+
+      // Sign up the user
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -264,8 +322,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
 
       if (data?.user) {
-        // Várunk egy kicsit, hogy a Supabase trigger létrehozhassa a profilt
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Create profile immediately instead of waiting for trigger
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              username,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]);
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          // If profile creation fails, try to delete the auth user
+          await supabase.auth.admin.deleteUser(data.user.id);
+          throw new Error('Failed to create user profile');
+        }
+
+        // Fetch the newly created profile
         const profileData = await fetchProfile(data.user.id);
         if (profileData) {
           setProfile(profileData);
@@ -324,6 +400,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       signIn,
+      signInWithGoogle,
       signUp,
       signOut,
       updateProfile,

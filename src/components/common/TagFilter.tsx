@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
-import { TagGroup } from '../../lib/supabase-types';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TagFilterProps {
   tagGroups: TagGroup[];
@@ -33,28 +32,6 @@ const TagFilter: React.FC<TagFilterProps> = ({ tagGroups, activeTags, onTagToggl
           {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
       </div>
-
-      {/* Kiválasztott címkék megjelenítése */}
-      {activeTagsInGroup.length > 0 && (
-        <div className="absolute left-0 mt-1 w-full">
-          <div className="bg-white border border-gray-200 rounded-md shadow-sm p-1">
-            {activeTagsInGroup.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center m-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-              >
-                {tag}
-                <button
-                  onClick={() => onTagToggle(group.name, tag)}
-                  className="ml-1 hover:text-blue-600"
-                >
-                  <X size={14} />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Lenyíló menü */}
       {isOpen && (

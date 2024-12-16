@@ -4,6 +4,7 @@ import { Folder, Search } from 'lucide-react';
 import { useAuth } from '../../lib/auth-context';
 import { Gallery, Video, GalleryCategory } from '../../lib/supabase-types';
 import Header from '../common/Header';
+
 interface MainPageProps {
   galleries: Gallery[];
   videos: Video[];
@@ -33,7 +34,9 @@ const MainPage: React.FC<MainPageProps> = ({ galleries, videos }) => {
     }
 
     // Kategória szűrés
-    if (selectedCategory) {
+    if (selectedCategory === 'own' && user) {
+      filtered = filtered.filter(gallery => gallery.user_id === user.id);
+    } else if (selectedCategory) {
       filtered = filtered.filter(gallery => gallery.category === selectedCategory);
     }
 
@@ -48,9 +51,7 @@ const MainPage: React.FC<MainPageProps> = ({ galleries, videos }) => {
           .slice(0, 5)
       }
     };
-  }, [galleries, videos, searchTerm, selectedCategory]);
-
-
+  }, [galleries, videos, searchTerm, selectedCategory, user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -91,6 +92,7 @@ const MainPage: React.FC<MainPageProps> = ({ galleries, videos }) => {
                 className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
+                {user && <option value="own">Own Galleries</option>}
                 {CATEGORIES.map(category => (
                   <option key={category} value={category}>
                     {/* Az első betű nagybetűsítése a megjelenítéshez */}

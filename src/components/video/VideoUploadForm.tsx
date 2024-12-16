@@ -16,7 +16,9 @@ interface VideoUploadFormProps {
 
 const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onVideoUpload, galleryId }) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [description, setDescription] = useState<string>('');
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [selectedTags, setSelectedTags] = useState<{ [key: string]: string[] }>({});
   const [tagGroups, setTagGroups] = useState<TagGroup[]>([]);
@@ -43,6 +45,16 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onVideoUpload, galler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (title.length < 3 || title.length > 100) {
+      setTitleError('Title must be between 3 and 100 characters');
+      return;
+    }
+
+    if (description && description.length > 5000) {
+      setDescriptionError('Description cannot be longer than 5000 characters');
+      return;
+    }
+
     const videoId = extractYoutubeId(youtubeUrl);
     if (!videoId) {
       alert('Invalid YouTube URL. Please enter a valid URL.');
@@ -55,6 +67,28 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onVideoUpload, galler
       videoId,
       selectedTags
     );
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    if (newTitle.length < 3) {
+      setTitleError('Title must be at least 3 characters long');
+    } else if (newTitle.length > 100) {
+      setTitleError('Title cannot be longer than 100 characters');
+    } else {
+      setTitleError(null);
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newDescription = e.target.value;
+    setDescription(newDescription);
+    if (newDescription.length > 5000) {
+      setDescriptionError('Description cannot be longer than 5000 characters');
+    } else {
+      setDescriptionError(null);
+    }
   };
 
   const extractYoutubeId = (url: string): string | null => {
@@ -108,23 +142,36 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onVideoUpload, galler
           type="text"
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          onChange={handleTitleChange}
+          className={`w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+            titleError ? 'border-red-500' : 'border-gray-300'
+          }`}
           required
         />
+        <div className="mt-1 flex justify-between">
+          <span className={`text-sm ${titleError ? 'text-red-500' : 'text-gray-500'}`}>
+            {titleError || `${title.length}/100 characters`}
+          </span>
+        </div>
       </div>
       <div className="mb-4">
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Description
+          Description (optional)
         </label>
         <textarea
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={handleDescriptionChange}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          required
+          className={`w-full px-3 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500 ${
+            descriptionError ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        <div className="mt-1 flex justify-between">
+          <span className={`text-sm ${descriptionError ? 'text-red-500' : 'text-gray-500'}`}>
+            {descriptionError || `${description.length}/5000 characters`}
+          </span>
+        </div>
       </div>
       <div className="mb-4">
         <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700 mb-1">

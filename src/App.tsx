@@ -9,6 +9,7 @@ import TagManagementPage from './components/dashboard/TagManagementPage';
 import VideoPage from './components/gallery/VideoPage';
 import RegistrationPage from './components/auth/RegistrationPage';
 import LoginPage from './components/auth/LoginPage';
+import AuthCallback from './components/auth/AuthCallback';
 import DashboardPage from './components/dashboard/DashboardPage';
 import CreateGallery from './components/dashboard/CreateGallery';
 import GalleriesPage from './components/dashboard/GalleriesPage';
@@ -71,7 +72,6 @@ function App() {
         }
 
         setGalleries(galleriesData || []);
-
 
 
         // Get the IDs of visible galleries
@@ -229,6 +229,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/gallery/:id" element={<CategoryGallery videos={videos} />} />
             <Route path="/video/:id" element={<VideoPage videos={videos} />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Routes>
         </div>
       </Router>

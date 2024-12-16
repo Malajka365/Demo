@@ -140,6 +140,12 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
     setCurrentPage(1);
   };
 
+  const clearAllFilters = () => {
+    setActiveTags({});
+    setSearchTerm('');
+    setCurrentPage(1);
+  };
+
   const filteredVideos = videos.filter((video) => {
     const matchesTags = Object.entries(activeTags).every(([group, tags]) => {
       if (tags.length === 0) return true;
@@ -159,6 +165,11 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
   const endIndex = startIndex + videosPerPage;
   const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header  showManageButtons={true} />
@@ -172,12 +183,12 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                 </h1>
                 {gallery && (
                   <div className="flex items-center text-sm text-gray-500">
-                    {gallery.visibility ? (
-                      <Eye className="h-4 w-4 mr-1" />
-                    ) : (
+                    {gallery.visibility === 'private' ? (
                       <EyeOff className="h-4 w-4 mr-1" />
+                    ) : (
+                      <Eye className="h-4 w-4 mr-1" />
                     )}
-                    {gallery.visibility ? 'Private' : 'Public'}
+                    {gallery.visibility.charAt(0).toUpperCase() + gallery.visibility.slice(1)}
                   </div>
                 )}
               </div>
@@ -198,24 +209,32 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                   />
                   <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 </div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <label htmlFor="videos-per-page" className="text-sm">Videos per page:</label>
-                  <select 
-                    id="videos-per-page" 
-                    value={videosPerPage} 
-                    onChange={handleVideosPerPageChange} 
-                    className="border rounded px-2 py-1"
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={clearAllFilters}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
-                    <option value={12}>12</option>
-                    <option value={24}>24</option>
-                    <option value={36}>36</option>
-                    <option value={48}>48</option>
-                  </select>
+                    Clear All Filters
+                  </button>
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="videos-per-page" className="text-sm">Videos per page:</label>
+                    <select 
+                      id="videos-per-page" 
+                      value={videosPerPage} 
+                      onChange={handleVideosPerPageChange} 
+                      className="border rounded px-2 py-1"
+                    >
+                      <option value={12}>12</option>
+                      <option value={24}>24</option>
+                      <option value={36}>36</option>
+                      <option value={48}>48</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               {/* Tag szűrők */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 mb-8">
                 {tagGroups?.map((group) => (
                   <div key={group.id} className="flex-none">
                     <TagFilter
@@ -241,7 +260,7 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                 <p className="text-gray-600">No videos found.</p>
               </div>
             ) : (
-              <>
+              <div>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {paginatedVideos.map((video) => (
                     <VideoCard key={video.id} video={video} />
@@ -252,7 +271,7 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                   <div className="mt-6 flex justify-center">
                     <nav className="flex items-center space-x-2">
                       <button
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                         disabled={currentPage === 1}
                         className="px-3 py-1 rounded-lg bg-white shadow-sm border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                       >
@@ -262,7 +281,7 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                         Page {currentPage} of {totalPages}
                       </span>
                       <button
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                         disabled={currentPage === totalPages}
                         className="px-3 py-1 rounded-lg bg-white shadow-sm border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                       >
@@ -271,7 +290,7 @@ const CategoryGallery: React.FC<CategoryGalleryProps> = ({ videos: allVideos }) 
                     </nav>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>
