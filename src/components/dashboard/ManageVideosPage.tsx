@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useParams,  Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Video } from '../../lib/supabase-types';
 import { Search, Edit, Trash2, ArrowLeft } from 'lucide-react';
 import EditVideoModal from '../video/EditVideoModal';
-import { getVideos, deleteVideo } from '../../services/video-service';
+import { getVideos, deleteVideo, updateVideo } from '../../services/video-service';
 import { getGallery } from '../../services/gallery-service';
 import Header from '../common/Header';
 
 const VIDEOS_PER_PAGE_OPTIONS = [20, 50, 100];
 
 const ManageVideosPage: React.FC = () => {
-const { id } = useParams<{ id: string }>();
-const { id: galleryId } = useParams();
-const [videos, setVideos] = useState<Video[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const { id: galleryId } = useParams();
+  const [videos, setVideos] = useState<Video[]>([]);
   const [galleryName, setGalleryName] = useState<string>('');
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,13 +67,21 @@ const [videos, setVideos] = useState<Video[]>([]);
 
   const handleSave = async (updatedVideo: Video) => {
     try {
+      // Frissítjük a videót a szerveren
+      await updateVideo(updatedVideo.id, {
+        title: updatedVideo.title,
+        description: updatedVideo.description,
+        tags: updatedVideo.tags
+      });
+
+      // Frissítjük a helyi állapotot
       const updatedVideos = videos.map((v) => 
         v.id === updatedVideo.id ? updatedVideo : v
       );
       setVideos(updatedVideos);
       setEditingVideo(null);
 
-      // Dispatch custom event for video update
+      // Esemény kiküldése a videó frissítéséről
       const event = new CustomEvent('videoUpdated', {
         detail: { video: updatedVideo }
       });
