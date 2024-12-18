@@ -92,9 +92,23 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onVideoUpload, galler
   };
 
   const extractYoutubeId = (url: string): string | null => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+    // Handle regular YouTube URLs and YouTube Shorts URLs
+    const regexPatterns = [
+      // Regular YouTube URL patterns
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/,
+      // YouTube Shorts URL pattern
+      /^.*youtube.com\/shorts\/([^#\&\?]*).*/
+    ];
+
+    for (const pattern of regexPatterns) {
+      const match = url.match(pattern);
+      if (match && match[2]?.length === 11) {
+        return match[2];
+      } else if (match && match[1]?.length === 11) {
+        return match[1];
+      }
+    }
+    return null;
   };
 
   const handleTagToggle = (group: string, tag: string) => {
