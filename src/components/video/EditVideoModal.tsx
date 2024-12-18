@@ -216,7 +216,7 @@ const EditVideoModal: React.FC<EditVideoModalProps> = ({ video, onSave, onClose 
             <button
               type="submit"
               onClick={handleSubmit}
-              disabled={titleError || descriptionError}
+              disabled={!!titleError || !!descriptionError}
               className={`px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 ${
                 titleError || descriptionError ? 'opacity-50 cursor-not-allowed' : ''
               }`}
